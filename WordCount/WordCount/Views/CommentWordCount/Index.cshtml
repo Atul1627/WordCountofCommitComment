@@ -1,0 +1,65 @@
+﻿@model WordCount.Models.CommentWordCount.VMCommentWordCount
+@{
+    ViewBag.Title = "Commit Comment Word Count";
+}
+<script type="text/javascript">
+    function Export() {
+        debugger;
+    }
+</script>
+<div>
+    <div>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <a style="color:white" href="@Url.Action("Export", "CommentWordCount", new { objExportParams = Newtonsoft.Json.JsonConvert.SerializeObject(Model.SortedWordCount)})">Export the data</a>
+        </div>
+    </div>
+    @*<div class="row">
+            @foreach (var item in Model.AVLMessages)
+                {
+                    <label>
+                        <strong>
+                            @item
+                        </strong>
+                    </label>
+                }
+        </div>*@
+    @*<div class="row">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Word</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var keyValue in Model.WordkeyValuePairs)
+                    {
+                        <tr>
+                            <td>@keyValue.Key</td>
+                            <td>@keyValue.Value</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>*@
+    <div class="row">
+        <table class="table table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Word</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var keyValue in Model.SortedWordCount)
+                {
+                    <tr>
+                        <td>@keyValue.Key</td>
+                        <td>@keyValue.Value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
