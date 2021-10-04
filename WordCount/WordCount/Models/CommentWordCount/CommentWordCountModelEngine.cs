@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using WordCount.APICalls;
 
 namespace WordCount.Models.CommentWordCount
 {
     public class CommentWordCountModelEngine
     {
         TempDataDictionary tempData;
+        CommitDetailsAPI apiCall;
         public CommentWordCountModelEngine()
         {
             this.tempData = new TempDataDictionary();
+            this.apiCall = new CommitDetailsAPI();
         }
 
         public VMCommentWordCount GetWordCount()
@@ -98,6 +102,10 @@ namespace WordCount.Models.CommentWordCount
         private List<string> GetGITCommits()
         {
             List<string> GitCommits = new List<string>();
+            string userName = "ATUL1627";
+            string token = "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";
+            string repoURL = "https://github.com/Atul1627/WordCountofCommitComment";
+            GitCommits = Task.Run(() => apiCall.GetCommitDetais(userName,token,repoURL)).Result;
             string commit = string.Empty;
             try
             {

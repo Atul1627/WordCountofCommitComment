@@ -3,7 +3,7 @@
     ViewBag.Title = "Commit Comment Word Count";
 }
 <script type="text/javascript">
-    function Export() {
+    function GetCommitWordCount() {
         debugger;
     }
 </script>
@@ -13,6 +13,36 @@
             <a style="color:white" href="@Url.Action("Export", "CommentWordCount", new { objExportParams = Newtonsoft.Json.JsonConvert.SerializeObject(Model.SortedWordCount)})">Export the data</a>
         </div>
     </div>
+    <div class="row">
+        <div class="well well-lg">
+            <div class="row col-md-12">
+                <div class="col-md-2">
+                    <label><strong>Username :</strong></label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="UserName">
+                </div>
+                <div class="col-md-2">
+                    <label><strong>Access token :</strong></label>
+                </div>
+                <div class="col-md-5">
+                    <input type="password" class="form-control" id="Token">
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-2">
+                    <label><strong>Url to Repo :</strong></label>
+                </div>
+                <div class="col-md-8">
+                    <textarea class="form-control" rows="2" id="RepoURL"></textarea>
+                </div> 
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary" onclick="GetCommitWordCount()">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr/>
     @*<div class="row">
             @foreach (var item in Model.AVLMessages)
                 {
