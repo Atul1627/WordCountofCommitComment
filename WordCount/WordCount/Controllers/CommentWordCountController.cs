@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -19,7 +21,25 @@ namespace WordCount.Controllers
         // GET: AVL
         public ActionResult Index()
         {
-            return View(_modelEngine.GetWordCount());
+            return View();
+        }
+
+        [HttpGet]
+        public JsonResult GetCommentWordData(string userName,string accessToken, string gheRepoURL)
+        {            
+            VMCommentWordCount data = new VMCommentWordCount();
+            try
+            {
+                // Prepare Ajax JSON Data Result.  
+                data = _modelEngine.GetWordCount(userName, accessToken, gheRepoURL);
+            }
+            catch (Exception ex)
+            {
+                data.ErrorMessage = ex.Message;
+            }
+            // Return info.  
+            return this.Json(JsonConvert.SerializeObject(data), JsonRequestBehavior.AllowGet);
+
         }
 
         public FileResult Export(string objExportParams)

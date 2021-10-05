@@ -1,95 +1,147 @@
-﻿@model WordCount.Models.CommentWordCount.VMCommentWordCount
-@{
+﻿@{
     ViewBag.Title = "Commit Comment Word Count";
 }
+<style type="text/css">
+    .link-navbar {
+        margin-left: 225px !important;        
+        color: white !important;
+    }
+    .height-well {
+       height: 115px !important;     
+       padding : 15px !important;
+    }
+    .max-height-table {
+        height: 350px !important;       
+    }
+    
+</style>
 <script type="text/javascript">
     function GetCommitWordCount() {
         debugger;
+        var userName = $('#UserName').val();
+        var accessToken = $('#Token').val();
+        var gheRepoURL = $('#RepoURL').val();
+        if (userName === null || userName === "") {
+            alert("Please enter an user name.");
+            return;
+        }
+        else if (accessToken === null || accessToken === "") {
+            alert("Please enter an access token.");
+            return;
+        }
+        else if (gheRepoURL === null || gheRepoURL === "") {
+            alert("Please enter a valid url of GHE repo.");
+            return;
+        }
+        $.ajax(
+            {
+                type: 'GET',
+                dataType: 'JSON',
+                url: '/CommentWordCount/GetCommentWordData',
+                data: { "userName": userName, "accessToken": accessToken, "gheRepoURL": gheRepoURL },
+                success:
+                    function (response) {
+                        debugger;
+                        // Generate HTML table.  
+                        var data = JSON.parse(response);
+                        if (data.ErrorMessage !== null && data.ErrorMessage !== "") {
+                            alert(data.ErrorMessage);
+                        }
+                        else {
+                            var sortedData = data.SortedWordCount;
+                            $("#sortedData").val(JSON.stringify(sortedData));                            
+                            sortedData.forEach(function (item) {
+                                $('tbody').append('<tr><td>' + item.Key + '</td><td>' + item.Value + '</td></tr>')
+                            });
+                            $('tbody').css({"overflow-y": "scroll"});
+                        }
+                        //convertJsonToHtmlTable(JSON.parse(response), $("#TableId"));
+                    },
+                error:
+                    function (response) {
+                        alert("Error: " + response);
+                    }
+            });
+    }
+
+    function ExportCommitWordCount() {
+        debugger;
+        var sdata = $("#sortedData").val();
+        if (sdata === null || sdata === "") {
+            alert("No data to export.");
+            return;
+        }
+        window.location = '/CommentWordCount/Export?objExportParams=' + sdata;
+        //$.ajax(
+        //    {
+        //        type: 'GET',
+        //        dataType: 'JSON',
+        //        url: '/CommentWordCount/Export',
+        //        data: { "objExportParams": sdata },
+        //        success:
+        //            function (response) {
+                        
+        //            },
+        //        error:
+        //            function (response) {
+        //                alert("Error: " + response);
+        //            }
+        //    });
+        
     }
 </script>
 <div>
     <div>
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <a style="color:white" href="@Url.Action("Export", "CommentWordCount", new { objExportParams = Newtonsoft.Json.JsonConvert.SerializeObject(Model.SortedWordCount)})">Export the data</a>
+        <div class="row navbar navbar-dark bg-primary navbar-fixed-top">
+            @*<a class="link-navbar" onclick="ExportCommitWordCount()">Export the data</a>*@
         </div>
     </div>
-    <div class="row">
-        <div class="well well-lg">
-            <div class="row col-md-12">
-                <div class="col-md-2">
+    <div class="row col-sm-12">
+        <div class="well height-well">
+            <div class="row col-sm-12">
+                <div class="col-sm-2">
                     <label><strong>Username :</strong></label>
                 </div>
-                <div class="col-md-3">
+                <div class="col-sm-3">
                     <input type="text" class="form-control" id="UserName">
                 </div>
-                <div class="col-md-2">
+                <div class="col-sm-2">
                     <label><strong>Access token :</strong></label>
                 </div>
-                <div class="col-md-5">
+                <div class="col-sm-5">
                     <input type="password" class="form-control" id="Token">
                 </div>
             </div>
-            <div class="row col-md-12">
-                <div class="col-md-2">
-                    <label><strong>Url to Repo :</strong></label>
-                </div>
-                <div class="col-md-8">
-                    <textarea class="form-control" rows="2" id="RepoURL"></textarea>
-                </div> 
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-primary" onclick="GetCommitWordCount()">Submit</button>
-                </div>
-            </div>
+            <br/><br/>
+                 <div class="row col-sm-12">
+                     <div class="col-sm-2">
+                         <label><strong>Url to Repo :</strong></label>
+                     </div>
+                     <div class="col-sm-5">
+                         <textarea class="form-control" rows="2" id="RepoURL"></textarea>
+                     </div>
+                     <div class="col-sm-2">
+                         <button type="button" class="btn btn-primary" onclick="GetCommitWordCount()">Submit</button>
+                     </div>
+                     <div class="col-sm-2 col-sm-pull-1">
+                         <button type="button" class="btn btn-success" onclick="ExportCommitWordCount()">Export Data</button>
+                     </div>
+                 </div>
         </div>
     </div>
-    <hr/>
-    @*<div class="row">
-            @foreach (var item in Model.AVLMessages)
-                {
-                    <label>
-                        <strong>
-                            @item
-                        </strong>
-                    </label>
-                }
-        </div>*@
-    @*<div class="row">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Word</th>
-                        <th>Count</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var keyValue in Model.WordkeyValuePairs)
-                    {
-                        <tr>
-                            <td>@keyValue.Key</td>
-                            <td>@keyValue.Value</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>*@
-    <div class="row">
-        <table class="table table-bordered table-condensed">
+    <hr/>    
+    <div class="row col-sm-12">       
+        <table class="table table-responsive table-striped table-bordered table-hover">
             <thead>
                 <tr>
                     <th>Word</th>
                     <th>Count</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach (var keyValue in Model.SortedWordCount)
-                {
-                    <tr>
-                        <td>@keyValue.Key</td>
-                        <td>@keyValue.Value</td>
-                    </tr>
-                }
+            <tbody class="max-height-table">               
             </tbody>
         </table>
     </div>
+    <input type="hidden" id="sortedData">
 </div>
 

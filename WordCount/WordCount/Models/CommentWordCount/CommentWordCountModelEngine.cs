@@ -19,47 +19,61 @@ namespace WordCount.Models.CommentWordCount
             this.apiCall = new CommitDetailsAPI();
         }
 
-        public VMCommentWordCount GetWordCount()
+        public VMCommentWordCount GetWordCount(string userName, string accessToken, string gheRepoURL)
         {
             VMCommentWordCount VMCommentWordCount = new VMCommentWordCount();
             try
-            {
-                List<string> gitCommits = GetGITCommits();
-                foreach (string comment in gitCommits)
+            {               
+                if (Uri.IsWellFormedUriString(gheRepoURL, UriKind.RelativeOrAbsolute))
                 {
-                    var regex = new Regex(@"\b[\s,\.-:;]*"); //This works even if you have ".,; tabs and new lines" between your words.             
-                    List<string> words = regex.Split(comment).Where(x => !string.IsNullOrEmpty(x)).ToList();
-                    AVLTree<string> commentAVL = new AVLTree<string>();
-                    //Storing the words in AVL Tree and the unsorted counts of words.
-                    foreach (string word in words)
+                    List<string> gitCommits = GetGITCommits(userName, accessToken, gheRepoURL);
+                    if (gitCommits.Count > 0)
                     {
-                        //duplicates are not allowed in AVL Tree
-                        if (!commentAVL.Search(word))
+                        foreach (string comment in gitCommits)
                         {
-                            commentAVL.Add(word);
-                        }
-                        //Adding each word and their occurence count
-                        bool keyExists = VMCommentWordCount.WordkeyValuePairs.ContainsKey(word);
-                        if (keyExists)
-                        {
-                            VMCommentWordCount.WordkeyValuePairs[word] += 1;
-                        }
-                        else
-                        {
-                            VMCommentWordCount.WordkeyValuePairs.Add(word, 1);
+                            var regex = new Regex(@"\b[\s,\.-:;]*"); //This works even if you have ".,; tabs and new lines" between your words.             
+                            List<string> words = regex.Split(comment).Where(x => !string.IsNullOrEmpty(x)).ToList();
+                            AVLTree<string> commentAVL = new AVLTree<string>();
+                            //Storing the words in AVL Tree and the unsorted counts of words.
+                            foreach (string word in words)
+                            {
+                                //duplicates are not allowed in AVL Tree
+                                if (!commentAVL.Search(word))
+                                {
+                                    commentAVL.Add(word);
+                                }
+                                //Adding each word and their occurence count
+                                bool keyExists = VMCommentWordCount.WordkeyValuePairs.ContainsKey(word);
+                                if (keyExists)
+                                {
+                                    VMCommentWordCount.WordkeyValuePairs[word] += 1;
+                                }
+                                else
+                                {
+                                    VMCommentWordCount.WordkeyValuePairs.Add(word, 1);
+                                }
+
+                            }
+                            VMCommentWordCount.AllAVLTrees.Add(commentAVL);
                         }
 
+                        //Sort the word count according to the ASCII codes.
+                        List<KeyValuePair<string, int>> wordCountList = VMCommentWordCount.WordkeyValuePairs.ToList();
+                        List<string> sortedkeyList = BubbleSortKeys(wordCountList.Select(X => X.Key).ToList());
+                        foreach (string key in sortedkeyList)
+                        {
+                            VMCommentWordCount.SortedWordCount.Add(new KeyValuePair<string, int>(key, Convert.ToInt32(VMCommentWordCount.WordkeyValuePairs[key])));
+                        }
                     }
-                    VMCommentWordCount.AllAVLTrees.Add(commentAVL);
+                    else {
+                        VMCommentWordCount.ErrorMessage = "No data found.Please verify the credentials you have entered.";
+                    }
+                    
                 }
-
-                //Sort the word count according to the ASCII codes.
-                List<KeyValuePair<string, int>> wordCountList = VMCommentWordCount.WordkeyValuePairs.ToList();
-                List<string> sortedkeyList = BubbleSortKeys(wordCountList.Select(X => X.Key).ToList());
-                foreach (string key in sortedkeyList)
-                {
-                    VMCommentWordCount.SortedWordCount.Add(new KeyValuePair<string, int>(key, Convert.ToInt32(VMCommentWordCount.WordkeyValuePairs[key])));
+                else {
+                    VMCommentWordCount.ErrorMessage = "Please enter a valid url for GHE Repo";
                 }
+                
 
                 //foreach (var AVL in VMCommentWordCount.AllAVLTrees)
                 //{
@@ -88,7 +102,7 @@ namespace WordCount.Models.CommentWordCount
             }
             catch (Exception ex)
             {
-                throw ex;
+                VMCommentWordCount.ErrorMessage = ex.Message;
             }
             return VMCommentWordCount;
         }
@@ -99,15 +113,15 @@ namespace WordCount.Models.CommentWordCount
             tempData["NodeValue"] = value;
         }
 
-        private List<string> GetGITCommits()
+        private List<string> GetGITCommits(string userName, string accessToken, string gheRepoURL)
         {
             List<string> GitCommits = new List<string>();                      
             try
             {
-                string userName = "ATUL1627";
-                string token = "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";
-                string repoURL = "https://github.com/Atul1627/WordCountofCommitComment";
-                GitCommits = apiCall.GetCommitDetais(userName, token, repoURL);
+                //string userName = "ATUL1627";
+                //string token = "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";
+                //string repoURL = "https://github.com/Atul1627/WordCountofCommitComment";
+                GitCommits = apiCall.GetCommitDetais(userName, accessToken, gheRepoURL);
             }
             catch (Exception ex)
             {
@@ -118,18 +132,26 @@ namespace WordCount.Models.CommentWordCount
         private List<string> BubbleSortKeys(List<string> keyLists)
         {
             string temp;
-            for (int i = 0; i < keyLists.Count(); i++)
+            try
             {
-                for (int j = 0; j < keyLists.Count() - 1; j++)
+                for (int i = 0; i < keyLists.Count(); i++)
                 {
-                    if ((int)keyLists[j].ToCharArray().Take(1).Single() > (int)keyLists[j + 1].ToCharArray().Take(1).Single())
+                    for (int j = 0; j < keyLists.Count() - 1; j++)
                     {
-                        temp = keyLists[j];
-                        keyLists[j] = keyLists[j + 1];
-                        keyLists[j + 1] = temp;
+                        if ((int)keyLists[j].ToCharArray().Take(1).Single() > (int)keyLists[j + 1].ToCharArray().Take(1).Single())
+                        {
+                            temp = keyLists[j];
+                            keyLists[j] = keyLists[j + 1];
+                            keyLists[j + 1] = temp;
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+                
             return keyLists;
         }
     }
