@@ -31,7 +31,7 @@ namespace WordCount.Models.CommentWordCount
                     {
                         foreach (string comment in gitCommits)
                         {
-                            var regex = new Regex(@"\b[\s(,\.-:;)]*"); //This works even if you have ".,; tabs and new lines" between your words.             
+                            var regex = new Regex(@"\b[\s(,\.-:<;_=+*&/?>^%$#')^0-9.-]*"); //This works even if you have ".,; tabs and new lines" between your words.             
                             List<string> words = regex.Split(comment).Where(x => !string.IsNullOrEmpty(x)).ToList();
                             AVLTree<string> commentAVL = new AVLTree<string>();
                             //Storing the words in AVL Tree and the unsorted counts of words.
