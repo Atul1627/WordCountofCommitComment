@@ -101,28 +101,13 @@ namespace WordCount.Models.CommentWordCount
 
         private List<string> GetGITCommits()
         {
-            List<string> GitCommits = new List<string>();
-            string userName = "ATUL1627";
-            string token = "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";
-            string repoURL = "https://github.com/Atul1627/WordCountofCommitComment";
-            GitCommits = apiCall.GetCommitDetais(userName, token, repoURL);
-            string commit = string.Empty;
+            List<string> GitCommits = new List<string>();                      
             try
             {
-                commit = "Creating a project for testing. Initail commit testing";
-                GitCommits.Add(commit);
-                commit = "Adding commit for testing. Second commit testing";
-                GitCommits.Add(commit);
-                commit = "Adding commit for testing. Third commit testing";
-                GitCommits.Add(commit);
-                commit = "Adding commit for testing. Fourth commit testing";
-                GitCommits.Add(commit);
-                commit = "Adding commit for testing. Fifth commit testing";
-                GitCommits.Add(commit);
-                commit = "Testing AVL Tree Insertion. Sixth Commit testing";
-                GitCommits.Add(commit);
-                commit = "Testing bubble sort for testing. Seventh Commit testing";
-                GitCommits.Add(commit);
+                string userName = "ATUL1627";
+                string token = "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";
+                string repoURL = "https://github.com/Atul1627/WordCountofCommitComment";
+                GitCommits = apiCall.GetCommitDetais(userName, token, repoURL);
             }
             catch (Exception ex)
             {
