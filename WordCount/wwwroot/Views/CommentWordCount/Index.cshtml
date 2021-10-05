@@ -17,7 +17,7 @@
 </style>
 <script type="text/javascript">
     function GetCommitWordCount() {
-        debugger;
+        //debugger;
         var userName = $('#UserName').val();
         var accessToken = $('#Token').val();
         var gheRepoURL = $('#RepoURL').val();
@@ -64,30 +64,18 @@
             });
     }
 
-    function ExportCommitWordCount() {
+    function ExportCommitWordCount()
+    {
         debugger;
+        var userName = $('#UserName').val();
+        var accessToken = $('#Token').val();
+        var gheRepoURL = $('#RepoURL').val();
         var sdata = $("#sortedData").val();
         if (sdata === null || sdata === "") {
             alert("No data to export.");
             return;
         }
-        window.location = '/CommentWordCount/Export?objExportParams=' + sdata;
-        //$.ajax(
-        //    {
-        //        type: 'GET',
-        //        dataType: 'JSON',
-        //        url: '/CommentWordCount/Export',
-        //        data: { "objExportParams": sdata },
-        //        success:
-        //            function (response) {
-                        
-        //            },
-        //        error:
-        //            function (response) {
-        //                alert("Error: " + response);
-        //            }
-        //    });
-        
+        window.location = '/CommentWordCount/Export?Username=' + userName + '&accessToken=' + accessToken + '&gheRepoURL=' + gheRepoURL;        
     }
 </script>
 <div>

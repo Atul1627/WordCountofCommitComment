@@ -13,10 +13,10 @@ namespace WordCount.Controllers
     public class CommentWordCountController : Controller
     {
         CommentWordCountModelEngine _modelEngine;
-
+        
         public CommentWordCountController()
         {
-            _modelEngine = new CommentWordCountModelEngine();
+            _modelEngine = new CommentWordCountModelEngine();            
         }
         
         public ActionResult Index()
@@ -32,6 +32,7 @@ namespace WordCount.Controllers
             {
                 // Prepare Ajax JSON Data Result.  
                 data = _modelEngine.GetWordCount(userName, accessToken, gheRepoURL);
+                TempData["SortedData"] = Newtonsoft.Json.JsonConvert.SerializeObject(data.SortedWordCount);
             }
             catch (Exception ex)
             {
@@ -42,21 +43,40 @@ namespace WordCount.Controllers
 
         }
 
-        public FileResult Export(string objExportParams)
+        public FileResult Export(string userName, string accessToken, string gheRepoURL)
         {
-            List<KeyValuePair<string, int>> exportData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<KeyValuePair<string, int>>>(objExportParams);
-
+            List<KeyValuePair<string, int>> exportData = new List<KeyValuePair<string, int>>();
             StringBuilder sb = new StringBuilder();
-            sb.Append("Word,Occurrence Count");
-            sb.Append("\r\n");            
-            foreach (var expData in exportData)
+            try
             {
-                //Append data with separator.
-                sb.Append(expData.Key + "," + expData.Value);
-
-                //Append new line character.
+                if (TempData["SortedData"].ToString() != null)
+                {
+                    exportData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<KeyValuePair<string, int>>>(TempData["SortedData"].ToString());
+                    //exportData = (<List<KeyValuePair<string, int>>>)TempData["SortedData"];
+                }
+                else
+                {
+                    VMCommentWordCount data = new VMCommentWordCount();
+                    data = _modelEngine.GetWordCount(userName, accessToken, gheRepoURL);
+                    exportData = data.SortedWordCount;
+                }                
+                sb.Append("Word,Occurrence Count");
                 sb.Append("\r\n");
+                foreach (var expData in exportData)
+                {
+                    //Append data with separator.
+                    sb.Append(expData.Key + "," + expData.Value);
+
+                    //Append new line character.
+                    sb.Append("\r\n");
+                }
+
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
 
             return File(Encoding.UTF8.GetBytes(sb.ToString()), "text/csv", "WordCount.csv");
         }
