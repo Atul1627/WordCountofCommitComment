@@ -105,7 +105,7 @@ namespace WordCount.Models.CommentWordCount
             string userName = "ATUL1627";
             string token = "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";
             string repoURL = "https://github.com/Atul1627/WordCountofCommitComment";
-            GitCommits = Task.Run(() => apiCall.GetCommitDetais(userName,token,repoURL)).Result;
+            GitCommits = apiCall.GetCommitDetais(userName, token, repoURL);
             string commit = string.Empty;
             try
             {
