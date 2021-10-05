@@ -12,7 +12,7 @@ using WordCount.Models.CommentWordCount;
 namespace WordCount.APICalls
 {
     public class CommitDetailsAPI
-    {        
+    {
         public List<string> GetCommitDetais(string UserName, string token, string repourl)
         {
             HttpMessageHandler handler = new HttpClientHandler()
@@ -28,7 +28,7 @@ namespace WordCount.APICalls
             };
 
             httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
-             
+
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(credentials);
             string val = System.Convert.ToBase64String(plainTextBytes);
             httpClient.DefaultRequestHeaders.Add("User-Agent", @"Mozilla/5.0 (Windows NT 10; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0");
@@ -44,10 +44,10 @@ namespace WordCount.APICalls
                 var message = Json.Decode(strresult);
                 for (int i = 0; i < message.Length; i++)
                 {
-                    content.Add(message[i].commit.message.ToString()); 
+                    content.Add(message[i].commit.message.ToString());
                 }
-            }               
-            
+            }
+
 
             return content;
         }

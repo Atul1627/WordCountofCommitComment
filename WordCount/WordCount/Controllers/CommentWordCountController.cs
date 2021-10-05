@@ -18,7 +18,7 @@ namespace WordCount.Controllers
         {
             _modelEngine = new CommentWordCountModelEngine();
         }
-        // GET: AVL
+        
         public ActionResult Index()
         {
             return View();
@@ -48,8 +48,7 @@ namespace WordCount.Controllers
 
             StringBuilder sb = new StringBuilder();
             sb.Append("Word,Occurrence Count");
-            sb.Append("\r\n");
-            //sb.Append("Word  -> Occurance Count");
+            sb.Append("\r\n");            
             foreach (var expData in exportData)
             {
                 //Append data with separator.

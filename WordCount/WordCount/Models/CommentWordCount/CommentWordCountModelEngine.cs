@@ -57,7 +57,7 @@ namespace WordCount.Models.CommentWordCount
                             VMCommentWordCount.AllAVLTrees.Add(commentAVL);
                         }
 
-                        //Sort the word count according to the ASCII codes.
+                        //Sort the word count according to the ASCII codes of their first character.
                         List<KeyValuePair<string, int>> wordCountList = VMCommentWordCount.WordkeyValuePairs.ToList();
                         List<string> sortedkeyList = BubbleSortKeys(wordCountList.Select(X => X.Key).ToList());
                         foreach (string key in sortedkeyList)
@@ -72,33 +72,7 @@ namespace WordCount.Models.CommentWordCount
                 }
                 else {
                     VMCommentWordCount.ErrorMessage = "Please enter a valid url for GHE Repo";
-                }
-                
-
-                //foreach (var AVL in VMCommentWordCount.AllAVLTrees)
-                //{
-                //    Action<string> action = GetNode;
-                //    //AVL.PreOrderTraversal(action);
-                //    int i = 0;
-                //    //if (tempData["NodeValue"] != null)
-                //    //{
-                //    //    string AVLMsg = "Node " + Convert.ToString(i) + " " + tempData["NodeValue"].ToString();
-                //    //    VMCommentWordCount.AVLMessages.Add(AVLMsg);
-                //    //}
-                //    //AVL.PostOrderTraversal(action);
-                //    //if (tempData["NodeValue"] != null)
-                //    //{
-                //    //    string AVLMsg = "Node " + Convert.ToString(i) + " " +  tempData["NodeValue"].ToString();
-                //    //    VMCommentWordCount.AVLMessages.Add(AVLMsg);
-                //    //}
-                //    AVL.InOrderTraversal(action);
-                //    if (tempData["NodeValue"] != null)
-                //    {
-                //        string AVLMsg = "Node " + Convert.ToString(i) + " " + tempData["NodeValue"].ToString();
-                //        VMCommentWordCount.AVLMessages.Add(AVLMsg);
-                //    }
-                //    i = i + 1;
-                //}
+                }                           
             }
             catch (Exception ex)
             {
